@@ -215,4 +215,3 @@ public class PacManSingle extends JPanel implements ActionListener, KeyListener 
     }
 }
 
-// 雙人模式類應另存為 "PacManDual.java" 並包括雙人邏輯
