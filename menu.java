@@ -1,94 +1,72 @@
+package com.zetcode;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
+// 回調介面定義
 
 public class menu {
-    public static void main(String[] args) {
-        // 創建 JFrame 主窗口
-        JFrame frame = new JFrame("Pac-man遊戲");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500, 400);
-        frame.setLayout(new BorderLayout());
+    private menuCallBack callback;
 
-        // 添加背景圖片
-        JPanel backgroundPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                ImageIcon background = new ImageIcon("path/to/your/background.jpg"); // 替換為背景圖片路徑
-                g.drawImage(background.getImage(), 0, 0, getWidth(), getHeight(), this);
-            }
-        };
-        backgroundPanel.setLayout(new BorderLayout());
-        frame.setContentPane(backgroundPanel);
+    public void showMenu(menuCallBack callback) {
+        this.callback = callback;
 
-        // 添加標題
-        JLabel titleLabel = new JLabel("Pac-man遊戲", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Microsoft YaHei", Font.BOLD, 24)); // 使用支援中文的字體
-        titleLabel.setForeground(Color.YELLOW);
-        titleLabel.setOpaque(false);
-        backgroundPanel.add(titleLabel, BorderLayout.NORTH);
+        SwingUtilities.invokeLater(() -> {
+            // 創建主框架
+            JFrame frame = new JFrame("遊戲選單");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(500, 400);
+            frame.setLayout(new BorderLayout());
 
-        // 創建按鈕面板
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(3, 1, 10, 10));
-        buttonPanel.setOpaque(false);
+            // 標題部分
+            JLabel title = new JLabel("小精靈", JLabel.CENTER);
+            title.setFont(new Font("Serif", Font.BOLD, 30));
+            title.setForeground(new Color(0x2D6187)); // 標題顏色
+            frame.add(title, BorderLayout.NORTH);
 
-        // 按鈕通用樣式
-        Font buttonFont = new Font("Microsoft YaHei", Font.BOLD, 16); // 使用支援中文的字體
+            // 創建按鈕面板
+            JPanel buttonPanel = new JPanel(new GridLayout(3, 1, 10, 10));
+            buttonPanel.setBackground(new Color(0xEAEAEA)); // 背景顏色
+            buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 50, 20, 50)); // 添加邊距
 
-        // 按鈕1: 經典小精靈
-        JButton classicPacmanButton = new JButton("經典小精靈");
-        classicPacmanButton.setFont(buttonFont);
-        classicPacmanButton.setBackground(Color.GREEN);
-        classicPacmanButton.setForeground(Color.WHITE);
-        classicPacmanButton.setFocusPainted(false);
-        classicPacmanButton.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2, true)); // 圓弧邊框
-        classicPacmanButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(frame, "經典小精靈模式啟動中...", "提示", JOptionPane.INFORMATION_MESSAGE);
-                // 在這裡添加經典小精靈的邏輯
-            }
+            // 經典小精靈按鈕
+            JButton classicPacmanButton = new JButton("經典小精靈");
+            classicPacmanButton.setFont(new Font("Serif", Font.BOLD, 18));
+            classicPacmanButton.setBackground(new Color(0xFFD700));
+            classicPacmanButton.setFocusPainted(false);
+            classicPacmanButton.addActionListener(e -> {
+                if (callback != null) {
+                    callback.onClassicPacmanSelected();
+                }
+            });
+            buttonPanel.add(classicPacmanButton);
+
+            // 雙人對戰按鈕
+            JButton multiplayerButton = new JButton("雙人對戰");
+            multiplayerButton.setFont(new Font("Serif", Font.BOLD, 18));
+            multiplayerButton.setBackground(new Color(0x4CAF50));
+            multiplayerButton.setFocusPainted(false);
+            multiplayerButton.addActionListener(e -> {
+                if (callback != null) {
+                    callback.onMultiplayerSelected();
+                }
+            });
+            buttonPanel.add(multiplayerButton);
+
+            // 退出按鈕
+            JButton exitButton = new JButton("退出");
+            exitButton.setFont(new Font("Serif", Font.BOLD, 18));
+            exitButton.setBackground(new Color(0xFF5733));
+            exitButton.setFocusPainted(false);
+            exitButton.addActionListener(e -> System.exit(0));
+            buttonPanel.add(exitButton);
+
+            // 添加面板到框架
+            frame.add(buttonPanel, BorderLayout.CENTER);
+
+            // 顯示框架
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
         });
-        buttonPanel.add(classicPacmanButton);
-
-        // 按鈕2: 對戰模式
-        JButton versusModeButton = new JButton("對戰模式");
-        versusModeButton.setFont(buttonFont);
-        versusModeButton.setBackground(Color.BLUE);
-        versusModeButton.setForeground(Color.WHITE);
-        versusModeButton.setFocusPainted(false);
-        versusModeButton.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2, true)); // 圓弧邊框
-        versusModeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(frame, "對戰模式啟動中...", "提示", JOptionPane.INFORMATION_MESSAGE);
-                // 在這裡添加對戰模式的邏輯
-            }
-        });
-        buttonPanel.add(versusModeButton);
-
-        // 按鈕3: 遊戲說明
-        JButton instructionsButton = new JButton("遊戲說明");
-        instructionsButton.setFont(buttonFont);
-        instructionsButton.setBackground(Color.ORANGE);
-        instructionsButton.setForeground(Color.WHITE);
-        instructionsButton.setFocusPainted(false);
-        instructionsButton.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2, true)); // 圓弧邊框
-        instructionsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(frame, "這是一個Pac-man遊戲示例。\n經典小精靈模式：體驗經典遊戲樂趣。\n對戰模式：與朋友對決！", "遊戲說明", JOptionPane.INFORMATION_MESSAGE);
-            }
-        });
-        buttonPanel.add(instructionsButton);
-
-        // 添加按鈕面板到主窗口
-        backgroundPanel.add(buttonPanel, BorderLayout.CENTER);
-
-        // 顯示窗口
-        frame.setVisible(true);
     }
 }
