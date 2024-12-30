@@ -397,9 +397,41 @@ public class PacManDual2 extends JPanel implements ActionListener, KeyListener {
     private void showGameOverDialog() {
         SwingUtilities.invokeLater(() -> {
             JOptionPane.showMessageDialog(this, "Game Over! Ghost Wins!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
-            System.exit(0);
+            returnToMenu();
         });
     }
+    private void returnToMenu() {
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            frame.dispose(); // 關閉當前遊戲框架
+            new menu().showMenu(new menuCallBack() {
+                @Override
+                public void onClassicPacmanSelected() {
+                    javax.swing.SwingUtilities.invokeLater(() -> {
+                        javax.swing.JFrame frame = new javax.swing.JFrame("經典小精靈");
+                        frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+                        frame.add(new PacSingle4());
+                        frame.pack();
+                        frame.setLocationRelativeTo(null);
+                        frame.setVisible(true);
+                    });
+                }
+    
+                @Override
+                public void onMultiplayerSelected() {
+                    javax.swing.SwingUtilities.invokeLater(() -> {
+                        javax.swing.JFrame frame = new javax.swing.JFrame("雙人對戰");
+                        frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+                        frame.add(new PacManDual2());
+                        frame.pack();
+                        frame.setLocationRelativeTo(null);
+                        frame.setVisible(true);
+                    });
+                }
+            });
+        });
+    }
+    
 
     @Override
     public void keyPressed(KeyEvent e) {

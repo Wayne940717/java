@@ -6,8 +6,13 @@ import java.awt.event.*;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.util.Random;
+import javax.sound.sampled.*;
+import java.io.File;
+
 
 public class PacSingle4 extends JPanel implements ActionListener, KeyListener {
+
+    private Clip backgroundMusicClip;
 
     private int[][] map = {
         {1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1},
@@ -77,6 +82,7 @@ public class PacSingle4 extends JPanel implements ActionListener, KeyListener {
         setBackground(Color.BLACK);
         addKeyListener(this);
         setFocusable(true);
+        playBackgroundMusic();
 
         try {
             playerImage = ImageIO.read(getClass().getResource("pacman1.png"));
@@ -106,6 +112,24 @@ public class PacSingle4 extends JPanel implements ActionListener, KeyListener {
         });
         ghostSpawnTimer.start();
 
+    }
+    private void playBackgroundMusic() {
+        try {
+            File audioFile = new File("C:\\Users\\許哲瑋\\Desktop\\java專題\\java2\\java-main\\期末專題\\com\\zetcode\\單人背景音.wav");
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+            backgroundMusicClip = AudioSystem.getClip();
+            backgroundMusicClip.open(audioStream);
+            backgroundMusicClip.loop(Clip.LOOP_CONTINUOUSLY);
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void stopBackgroundMusic() {
+        if (backgroundMusicClip != null && backgroundMusicClip.isRunning()) {
+            backgroundMusicClip.stop();
+            backgroundMusicClip.close();
+        }
     }
 
     @Override
@@ -343,6 +367,7 @@ public class PacSingle4 extends JPanel implements ActionListener, KeyListener {
     }
     
     private void showCollisionEffect() {
+        stopBackgroundMusic();
         Timer flashTimer = new Timer(100, null);
         flashTimer.addActionListener(new ActionListener() {
             int count = 0;
@@ -356,7 +381,7 @@ public class PacSingle4 extends JPanel implements ActionListener, KeyListener {
                 } else {
                     flashTimer.stop();
                     JOptionPane.showMessageDialog(PacSingle4.this, "Game Over! Your score: " + score);
-                    System.exit(0);
+                    returnToMenu();
                 }
             }
         });
@@ -384,6 +409,38 @@ public class PacSingle4 extends JPanel implements ActionListener, KeyListener {
         });
         shakeTimer.start();
     }
+    private void returnToMenu() {
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            frame.dispose(); // 關閉當前遊戲框架
+            new menu().showMenu(new menuCallBack() {
+                @Override
+                public void onClassicPacmanSelected() {
+                    javax.swing.SwingUtilities.invokeLater(() -> {
+                        javax.swing.JFrame frame = new javax.swing.JFrame("經典小精靈");
+                        frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+                        frame.add(new PacSingle4());
+                        frame.pack();
+                        frame.setLocationRelativeTo(null);
+                        frame.setVisible(true);
+                    });
+                }
+    
+                @Override
+                public void onMultiplayerSelected() {
+                    javax.swing.SwingUtilities.invokeLater(() -> {
+                        javax.swing.JFrame frame = new javax.swing.JFrame("雙人對戰");
+                        frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+                        frame.add(new PacManDual2());
+                        frame.pack();
+                        frame.setLocationRelativeTo(null);
+                        frame.setVisible(true);
+                    });
+                }
+            });
+        });
+    }
+    
 
     private void showCollisionEffect2() {
         Timer flashTimer = new Timer(100, null);
