@@ -19,7 +19,7 @@ public class PacSingle3 extends JPanel implements ActionListener, KeyListener {
         {1, 2, 1, 1, 2, 2, 2, 2, 1, 2, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 2, 2, 1},
         {1, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
         {1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1},
-        {1, 2, 2, 2, 2, 2, 1, 2, 1, 3, 3, 3, 1, 2, 1, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 1},
+        {1, 2, 2, 2, 2, 2, 1, 2, 1, 3, 3, 3, 1, 2, 1, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 1},
         {1, 1, 1, 1, 1, 2, 2, 2, 1, 3, 3, 3, 2, 2, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1},
         {1, 1, 2, 2, 2, 2, 1, 2, 1, 3, 3, 3, 1, 2, 3, 3, 3, 3, 1, 2, 2, 2, 2, 2, 1, 1},
         {1, 2, 2, 1, 2, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 2, 1},
@@ -27,9 +27,9 @@ public class PacSingle3 extends JPanel implements ActionListener, KeyListener {
         {1, 2, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 2, 2, 1, 2, 1},
         {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1},
         {1, 2, 1, 2, 1, 2, 1, 2, 2, 1, 2, 2, 2, 2, 2, 1, 2, 1, 2, 1, 2, 1, 1, 1, 2, 1},
-        {1, 2, 1, 2, 1, 2, 1, 2, 2, 1, 1, 2, 1, 2, 1, 1, 2, 1, 2, 1, 2, 2, 2, 2, 2, 1},
-        {1, 2, 1, 2, 1, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 1, 2, 1, 2, 1, 1, 1, 2, 1},
-        {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
+        {2, 2, 1, 2, 1, 2, 1, 2, 2, 1, 1, 2, 1, 2, 1, 1, 2, 1, 2, 1, 2, 2, 2, 2, 2, 2},
+        {2, 1, 1, 2, 1, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 1, 2, 1, 2, 1, 1, 1, 1, 2},
+        {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
         {1, 2, 1, 1, 2, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1},
         {1, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 1},
         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
@@ -132,7 +132,19 @@ public class PacSingle3 extends JPanel implements ActionListener, KeyListener {
         int px = playerCol * tileSize;
         int py = playerRow * tileSize;
         if (playerImage != null) {
-            g.drawImage(playerImage, px, py, tileSize, tileSize, this);
+            Graphics2D g2d = (Graphics2D) g.create(); // 创建 Graphics2D 对象
+            g2d.translate(px + tileSize / 2, py + tileSize / 2); // 将绘制原点移动到图片中心
+
+            if (dx == -1) { // 向左
+                g2d.scale(-1, 1); // 镜像翻转
+            } else if (dy == -1) { // 向上
+                g2d.rotate(-Math.PI / 2); // 向左旋转 90 度
+            } else if (dy == 1) { // 向下
+                g2d.rotate(Math.PI / 2); // 向右旋转 90 度
+            }
+            
+            g2d.drawImage(playerImage, -tileSize / 2, -tileSize / 2, tileSize, tileSize, this); // 绘制图片
+            g2d.dispose(); // 释放 Graphics2D 对象
         } else {
             g.setColor(Color.YELLOW);
             g.fillOval(px + 2, py + 2, tileSize - 4, tileSize - 4);
@@ -148,6 +160,10 @@ public class PacSingle3 extends JPanel implements ActionListener, KeyListener {
                 g.fillRect(gx + 2, gy + 2, tileSize - 4, tileSize - 4);
             }
         }
+        g.setColor(Color.WHITE);
+        g.drawString("Score: " + score, 10, 15); // 顯示分數
+        g.drawString("Lives: " + lives, 10, 30); // 顯示剩餘生命值
+
         
     }
 
@@ -197,7 +213,7 @@ public class PacSingle3 extends JPanel implements ActionListener, KeyListener {
             int maxWeight = -1;
             int behavior = random.nextInt(100);
     
-            if (behavior < 50) { // 隨機行動
+            if (behavior < 10) { // 隨機行動
                 for (int[] dir : directions) {
                     int newRow = currentPos[0] + dir[0];
                     int newCol = currentPos[1] + dir[1];
